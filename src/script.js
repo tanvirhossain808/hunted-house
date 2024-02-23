@@ -11,8 +11,11 @@ const gui = new dat.GUI()
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
 
+
 // Scene
 const scene = new THREE.Scene()
+const fog = new THREE.Fog("#262837", 2, 15)
+scene.fog = fog
 
 /**
  * Textures
@@ -88,11 +91,31 @@ bush4.scale.set(.15, .15, .15)
 bush4.position.set(-1, .05, 2.6)
 house.add(bush1, bush2, bush3, bush4)
 
+//Graves
+const graves = new THREE.Group()
+scene.add(graves)
+const graveGeometry = new THREE.BoxGeometry(.6, .8, .2)
+const graveMatrerial = new THREE.MeshStandardMaterial({ color: "#b2b6b1" })
+
+for (let i = 0; i < 50; i++) {
+    const angle = Math.random() * Math.PI * 2
+    console.log(angle);
+    const radius = 3 + Math.random() * 6
+    const x = Math.sin(angle) * radius
+    const z = Math.cos(angle) * radius
+
+    const grave = new THREE.Mesh(graveGeometry, graveMatrerial)
+    grave.position.set(x, .4 * .4, z)
+    grave.rotation.y = (Math.random() - .5) * .4
+    grave.rotation.z = (Math.random() - .5) * .4
+    graves.add(grave)
+}
+
 /**
  * Lights
  */
 // Ambient light
-const ambientLight = new THREE.AmbientLight('#ffffff', 0.5)
+const ambientLight = new THREE.AmbientLight('#b9d5ff', 0.12)
 gui.add(ambientLight, 'intensity').min(0).max(1).step(0.001)
 scene.add(ambientLight)
 
@@ -105,6 +128,12 @@ gui.add(moonLight.position, 'y').min(- 5).max(5).step(0.001)
 gui.add(moonLight.position, 'z').min(- 5).max(5).step(0.001)
 scene.add(moonLight)
 
+
+const doorLight = new THREE.PointLight("#ff7d46", 1, 7)
+doorLight.position.set(0, 2.2, 2.7)
+house.add(doorLight)
+doorLight
+
 /**
  * Sizes
  */
@@ -112,6 +141,7 @@ const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
 }
+
 
 window.addEventListener('resize', () => {
     // Update sizes
